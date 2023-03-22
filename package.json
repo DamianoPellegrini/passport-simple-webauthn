@@ -1,18 +1,18 @@
 {
   "name": "passport-simple-webauthn",
   "version": "0.1.0",
-  "description": "",
+  "description": "Passport server implementation for the @simplewebauthn/server library",
   "type": "module",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "DamianoPellegrini <damiano1.pellegrini@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf ./dist",
     "build": "tsup lib/index.ts --format cjs,esm --dts --external @simplewebauthn/server,passport,express",
     "watch": "pnpm run build --watch",
-    "format": "prettier --write",
+    "format": "prettier --write lib",
     "lint": "eslint --fix",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm run build"
   },
   "files": [
     "dist"
