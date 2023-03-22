@@ -1,0 +1,51 @@
+{
+  "name": "passport-simple-webauthn",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "prebuild": "rimraf ./dist",
+    "build": "tsup lib/index.ts --format cjs,esm --dts --external @simplewebauthn/server,passport,express",
+    "watch": "pnpm run build --watch",
+    "format": "prettier --write",
+    "lint": "eslint --fix",
+    "prepublishOnly": "pnpm build"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "^7.2.0",
+    "passport": "^0.6.0"
+  },
+  "devDependencies": {
+    "@simplewebauthn/typescript-types": "^7.0.0",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.5",
+    "@types/passport": "^1.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.6",
+    "rimraf": "^4.4.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.2"
+  },
+  "peerDependencies": {
+    "@simplewebauthn/server": "^7.2.0"
+  }
+}
