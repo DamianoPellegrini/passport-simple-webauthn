@@ -9,10 +9,10 @@
   "scripts": {
     "prebuild": "rimraf ./dist",
     "build": "tsup lib/index.ts --format cjs,esm --dts --external @simplewebauthn/server,passport,express",
-    "watch": "pnpm run build --watch",
+    "watch": "npm run build --watch",
     "format": "prettier --write lib",
     "lint": "eslint --fix",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist"
