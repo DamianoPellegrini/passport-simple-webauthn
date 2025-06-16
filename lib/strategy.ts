@@ -9,19 +9,6 @@ import type {
 import type { Request } from 'express';
 
 /**
- * Info provided by the authenticator during registration
- */
-export interface RegistrationInfo {
-  counter: number;
-  credentialID: Uint8Array;
-  credentialPublicKey: Uint8Array;
-  credentialType: 'public-key';
-  userVerified: boolean;
-  credentialDeviceType: CredentialDeviceType;
-  credentialBackedUp: boolean;
-}
-
-/**
  * Represent what we need to be stored in a session like storage
  */
 export interface SessionData<User extends { id: string }> {
@@ -39,9 +26,9 @@ export type ChallengeExtractorFn<User extends { id: string }> = (
 /**
  * Represent the user and the authenticator by the strategy
  */
-export type UserWithAuthenticator<User extends { id: string }> = {
+export type UserWithCredential<User extends { id: string }> = {
   user: User;
-  authenticator: AuthenticatorDevice;
+  credential: webauthn.WebAuthnCredential;
 };
 
 /**
@@ -54,7 +41,7 @@ export type ConcludeAuthenticationFn<
   Error = any,
 > = (
   err?: Error,
-  userWithAuthenticator?: UserWithAuthenticator<User>,
+  userWithCredential?: UserWithCredential<User>,
   info?: any,
 ) => void;
 
@@ -67,9 +54,9 @@ export type AuthenticationFn<User extends { id: string }, Error> = (
   userHandle: string,
   conclude?: ConcludeAuthenticationFn<User, Error>,
 ) =>
-  | UserWithAuthenticator<User>
+  | UserWithCredential<User>
   | undefined
-  | Promise<UserWithAuthenticator<User> | undefined>;
+  | Promise<UserWithCredential<User> | undefined>;
 
 /**
  * Used to conclude the registration process.
@@ -88,7 +75,7 @@ export type ConcludeRegistrationFn<User extends { id: string }, Error = any> = (
 export type RegistrationFn<User extends { id: string }, Error> = (
   req: Request,
   user: User,
-  registrationInfo: RegistrationInfo,
+  registrationInfo: webauthn.VerifiedRegistrationResponse['registrationInfo'],
   conclude?: ConcludeRegistrationFn<User, Error>,
 ) => User | undefined | Promise<User | undefined>;
 
@@ -203,9 +190,9 @@ export class Strategy<
       }
 
       // Helper inline function to verify the authenticator
-      async function verifyAuthenticator(authenticator: AuthenticatorDevice) {
+      async function verifyAuthenticator(credential: webauthn.WebAuthnCredential) {
         return await webauthn.verifyAuthenticationResponse({
-          authenticator,
+          credential,
           response: authentication,
           expectedChallenge: challenge,
           expectedOrigin:
@@ -218,7 +205,7 @@ export class Strategy<
       // conclude authentication by verifying the authenticator
       async function concludeAuthentication(
         err?: Error,
-        userWithAuthenticator?: UserWithAuthenticator<User>,
+        userWithAuthenticator?: UserWithCredential<User>,
         info?: any,
       ) {
         if (err) return self.error(err);
@@ -226,7 +213,7 @@ export class Strategy<
 
         try {
           if (
-            !(await verifyAuthenticator(userWithAuthenticator.authenticator))
+            !(await verifyAuthenticator(userWithAuthenticator.credential))
           ) {
             return self.fail(
               { message: 'Authenticator verification failed' },
@@ -244,18 +231,18 @@ export class Strategy<
       // Choose between async/await or callback
       if (this.authenticationFn.length < 4) {
         try {
-          const userWithAuthenticator = await this.authenticationFn(
+          const userWithCredential = await this.authenticationFn(
             req,
             body.id,
             user?.id ?? userHandle,
           );
 
-          if (!userWithAuthenticator) {
+          if (!userWithCredential) {
             return this.fail({ message: 'Invelid credential' }, 400);
           }
 
           if (
-            !(await verifyAuthenticator(userWithAuthenticator.authenticator))
+            !(await verifyAuthenticator(userWithCredential.credential))
           ) {
             return this.fail(
               { message: 'Authenticator verification failed' },
@@ -263,7 +250,7 @@ export class Strategy<
             );
           }
 
-          this.success(userWithAuthenticator.user);
+          this.success(userWithCredential.user);
         } catch (err) {
           return this.error(err);
         }
