@@ -1,9 +1,18 @@
 {
   "name": "passport-simple-webauthn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Integrate the verification process of @simplewebauthn/server with passportjs",
   "type": "module",
-  "keywords": ["api", "express", "authentication", "passportjs", "webauthn", "simplewebauthn", "server", "fido2"],
+  "keywords": [
+    "api",
+    "express",
+    "authentication",
+    "passportjs",
+    "webauthn",
+    "simplewebauthn",
+    "server",
+    "fido2"
+  ],
   "author": "DamianoPellegrini <damiano1.pellegrini@gmail.com>",
   "license": "MIT",
   "scripts": {
