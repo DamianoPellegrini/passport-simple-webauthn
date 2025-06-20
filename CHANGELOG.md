@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/DamianoPellegrini/passport-simple-webauthn/compare/v0.1.0...v0.1.1) (2025-06-20)
+
+
+### Bug Fixes
+
+* automatic release trigger ([21a277c](https://github.com/DamianoPellegrini/passport-simple-webauthn/commit/21a277cd360ed7656fe7926f0b6c694a0e3bfbe1))
+
 ## 0.1.0 (2023-03-25)
 
 
